@@ -1,0 +1,123 @@
+[1]
+Abbod, Maysam F. (2007). "Application of Artificial Intelligence to the Management of Urological Cancer". 
+The Journal of Urology. 178 (4): 1150–1156. doi:10.1016/j.juro.2007.05.122. PMID 17698099.
+
+[2]
+Impact of Artificial Neural Networks Training Algorithms on Accurate Prediction of Property Values
+November 2018Journal of Real Estate Research 40(3):375-418
+DOI:10.1080/10835547.2018.12091505
+Joseph Awoamim Yacim,University of Pretoria || Douw Boshoff ,Growthpoint Properties Ltd
+
+[3]
+McCulloch, W; Pitts, W (1943). "A Logical Calculus of Ideas Immanent in Nervous Activity". 
+Bulletin of Mathematical Biophysics. 5 (4): 115–133. doi:10.1007/BF02478259.
+
+[4]
+Rosenblatt, Frank (1957). "The Perceptron—a perceiving and recognizing automaton" (PDF). 
+Report 85-460-1. Cornell Aeronautical Laboratory.
+
+[5]
+A new scheme for training ReLU-based multi-layer feedforward neural networks
+Hao Wang
+Published 2017
+Computer Science
+
+[6]
+Chapter: Chapter Eleven Music recommender system using restricted Boltzmann machine with implicit feedback
+Book: Advances in Computers
+Author: Amitabh Biswal,Malaya Dutta Borah,Zakir Hussain
+Publisher: Elsevier
+Date: 2021
+
+[7]
+Wei, Jiakai (26 April 2019). "Forget the Learning Rate, Decay Loss". arXiv:1905.00094 [cs.LG].
+
+[9]
+Cameron Hashemi-Pour https://www.techtarget.com/searchenterpriseai/definition/backpropagation-algorithm
+
+[10]
+Artem Oppermann :https://builtin.com/machine-learning/loss-functions
+
+[11]
+John McGonagle, George Shaikouski, Christopher Williams, https://brilliant.org/wiki/backpropagation/
+[11]
+Rumelhart, D., Hinton, G. & Williams, R. Learning representations by back-propagating errors. Nature 323, 533–536 (1986). https://doi.org/10.1038/323533a0
+
+[12]
+[13]
+[14]
+
+[15]
+Herbert Zech Information as Property
+
+[16]
+Salomé Viljoen https://www.phenomenalworld.org/analysis/data-as-property/
+
+[17]
+Breur, Tom (July 2016). "Statistical Power Analysis and the contemporary "crisis" in social sciences". Journal of Marketing Analytics. 
+London, England: Palgrave Macmillan. 4 (2–3): 61–65. doi:10.1057/s41270-016-0001-3. ISSN 2050-3318.
+
+[18]
+Thomas Claburn https://www.theregister.com/2023/06/28/microsoft_openai_sued_privacy/
+
+[19]
+https://www.tensorflow.org/tutorials/generative/adversarial_fgsm
+
+[20]
+Ruixiang Tang, Mengnan Du, Ninghao Liu, Fan Yang, Xia Hu  
+An Embarrassingly Simple Approach for Trojan Attack in Deep Neural Networks
+
+[21]
+Ruixiang Tang, Mengnan Du, Ninghao Liu, Fan Yang, Xia Hu  
+An Embarrassingly Simple Approach for Trojan Attack in Deep Neural Networks
+
+[22]
+Ruixiang Tang, Mengnan Du, Ninghao Liu, Fan Yang, Xia Hu  
+An Embarrassingly Simple Approach for Trojan Attack in Deep Neural Networks
+
+[23]
+https://keras.io/api/models/
+
+[24]
+https://keras.io/api/losses/probabilistic_losses/
+
+[25]
+https://keras.io/api/optimizers/adadelta/
+
+[26]
+https://keras.io/api/metrics/accuracy_metrics/
+
+[27]
+https://keras.io/api/callbacks/model_checkpoint/
+
+[28]
+https://www.image-net.org/
+
+[29]
+Gershgorn, Dave. The data that transformed AI research—and possibly the world. Quartz. Atlantic Media Co. 2017-07-26 [2017-07-26]. （原始内容存档于2017-07-27）. 
+Having read about WordNet's approach, Li met with professor Christiane Fellbaum, a researcher influential in the continued work on WordNet, during a 2006 visit to Princeton.
+
+[30]
+https://image-net.org/challenges/LSVRC/2014/results
+
+[31]
+https://www.tensorflow.org/api_docs/python/tf/keras/applications/inception_v3/InceptionV3
+
+[32] KaimingHe XiangyuZhang ShaoqingRen JianSun
+DeepResidualLearningforImageRecognition
+
+[33] 
+https://tensorflow.google.cn/api_docs/python/tf/keras/layers/Add
+
+[34]
+https://www.tensorflow.org/api_docs/python/tf/keras/layers/Lambda
+
+[35] 
+https://docs.python.org/3/library/copy.html
+
+[36] https://benchmark.ini.rub.de/gtsrb_news.html
+[37] BadNet
+[38] https://github.com/bolunwang/backdoor/blob/master/models/gtsrb_bottom_right_white_4_target_33.h5
+[39] Trojan Attack
+[40] https://github.com/PurduePAML/TrojanNN/tree/master/code
+[41] Neural Cleanse Identifying and Mitigating Backdoor Attacks in Neural Networks
