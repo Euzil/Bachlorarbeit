@@ -99,8 +99,9 @@ def main():
     poison_train_loader = DataLoader(poison_train, batch_size=args.batch_size, shuffle=True, num_workers=0)
     poison_test_loader = DataLoader(poison_test, batch_size=args.batch_size, num_workers=0)
     clean_test_loader = DataLoader(clean_test, batch_size=args.batch_size, num_workers=0)
+
     '''
-    准备
+    准备模型学习率，优化器
     '''
     # Step 2: prepare model, criterion, optimizer, and learning rate scheduler.
     net = getattr(models, args.arch)(num_classes=10).to(device)
@@ -108,6 +109,9 @@ def main():
     optimizer = torch.optim.SGD(net.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.schedule, gamma=0.1)
 
+    '''
+    训练后门模型
+    '''
     # Step 3: train backdoored models
     logger.info('Epoch \t lr \t Time \t TrainLoss \t TrainACC \t PoisonLoss \t PoisonACC \t CleanLoss \t CleanACC')
     torch.save(net.state_dict(), os.path.join(args.output_dir, 'model_init.th'))
@@ -133,7 +137,9 @@ def main():
     # save the last checkpoint
     torch.save(net.state_dict(), os.path.join(args.output_dir, 'model_last.th'))
 
-
+'''
+训练模型
+'''
 def train(model, criterion, optimizer, data_loader):
     model.train()
     total_correct = 0
@@ -155,7 +161,9 @@ def train(model, criterion, optimizer, data_loader):
     acc = float(total_correct) / len(data_loader.dataset)
     return loss, acc
 
-
+'''
+测试模型
+'''
 def test(model, criterion, data_loader):
     model.eval()
     total_correct = 0
