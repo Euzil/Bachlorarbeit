@@ -65,7 +65,9 @@ def main():
         transforms.ToTensor(),
         transforms.Normalize(MEAN_CIFAR10, STD_CIFAR10)
     ])
-
+    '''
+    分别创建一个中毒的和干净的数据集
+    '''
     # Step 1: create poisoned / clean dataset
     orig_train = CIFAR10(root=args.data_dir, train=True, download=True, transform=transform_train)
     clean_train, clean_val = poison.split_dataset(dataset=orig_train, val_frac=0.1,
@@ -97,7 +99,9 @@ def main():
     poison_train_loader = DataLoader(poison_train, batch_size=args.batch_size, shuffle=True, num_workers=0)
     poison_test_loader = DataLoader(poison_test, batch_size=args.batch_size, num_workers=0)
     clean_test_loader = DataLoader(clean_test, batch_size=args.batch_size, num_workers=0)
-
+    '''
+    准备
+    '''
     # Step 2: prepare model, criterion, optimizer, and learning rate scheduler.
     net = getattr(models, args.arch)(num_classes=10).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
