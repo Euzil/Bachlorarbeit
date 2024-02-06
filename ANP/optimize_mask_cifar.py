@@ -48,18 +48,20 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 def main():
     MEAN_CIFAR10 = (0.4914, 0.4822, 0.4465)
     STD_CIFAR10 = (0.2023, 0.1994, 0.2010)
-    transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(MEAN_CIFAR10, STD_CIFAR10)
+    transform_train = transforms.Compose([ # 常用的图片变换，例如裁剪、旋转等
+        transforms.RandomCrop(32, padding=4), # 随机区域裁剪
+        transforms.RandomHorizontalFlip(), # 随机水平翻转
+        transforms.ToTensor(), # 将shape为(H, W, C)的nump.ndarray或img转为shape为(C, H, W)的tensor，ToTensor()能够把灰度范围从0-255变换到0-1之间 
+        transforms.Normalize(MEAN_CIFAR10, STD_CIFAR10) # 而transform.Normalize()则把0-1变换到(-1,1).
     ])
     transform_test = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(MEAN_CIFAR10, STD_CIFAR10)
     ])
-
-    # Step 1: create dataset - clean val set, poisoned test set, and clean test set.
+    '''
+    创建一个数据集，干净训练集，中毒测试集，干净测试集
+    '''
+    # Step 1: create dataset - clean val set, poisoned test set, and clean test set. 
     if args.trigger_info:
         trigger_info = torch.load(args.trigger_info, map_location=device)
     else:
@@ -70,36 +72,40 @@ def main():
                         'clean-label': 'checkerboard_4corner',
                         'blend': 'gaussian_noise'}
             trigger_type = triggers[args.poison_type]
-            pattern, mask = poison.generate_trigger(trigger_type=trigger_type)
+            pattern, mask = poison.generate_trigger(trigger_type=trigger_type) # 生成触发器
             trigger_info = {'trigger_pattern': pattern[np.newaxis, :, :, :], 'trigger_mask': mask[np.newaxis, :, :, :],
                             'trigger_alpha': args.trigger_alpha, 'poison_target': np.array([args.poison_target])}
 
-    orig_train = CIFAR10(root=args.data_dir, train=True, download=True, transform=transform_train)
-    _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac,
-                                        perm=np.loadtxt('./data/cifar_shuffle.txt', dtype=int))
-    clean_test = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
-    poison_test = poison.add_predefined_trigger_cifar(data_set=clean_test, trigger_info=trigger_info)
+    orig_train = CIFAR10(root=args.data_dir, train=True, download=True, transform=transform_train) # 原始数据集
+    _, clean_val = poison.split_dataset(dataset=orig_train, val_frac=args.val_frac, 
+                                        perm=np.loadtxt('./data/cifar_shuffle.txt', dtype=int)) # 分割数据集
+    clean_test = CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test) # 干净测试数据集
+    poison_test = poison.add_predefined_trigger_cifar(data_set=clean_test, trigger_info=trigger_info) # 中毒测试数据集
 
     random_sampler = RandomSampler(data_source=clean_val, replacement=True,
-                                   num_samples=args.print_every * args.batch_size)
+                                   num_samples=args.print_every * args.batch_size) # 随机采样
     clean_val_loader = DataLoader(clean_val, batch_size=args.batch_size,
-                                  shuffle=False, sampler=random_sampler, num_workers=0)
-    poison_test_loader = DataLoader(poison_test, batch_size=args.batch_size, num_workers=0)
-    clean_test_loader = DataLoader(clean_test, batch_size=args.batch_size, num_workers=0)
-
+                                  shuffle=False, sampler=random_sampler, num_workers=0) # 加载干净数据
+    poison_test_loader = DataLoader(poison_test, batch_size=args.batch_size, num_workers=0) # 加载中毒测试数据
+    clean_test_loader = DataLoader(clean_test, batch_size=args.batch_size, num_workers=0) # 加载干净测试数据
+    '''
+    加载模型和检查点
+    '''
     # Step 2: load model checkpoints and trigger info
-    state_dict = torch.load(args.checkpoint, map_location=device)
-    net = getattr(models, args.arch)(num_classes=10, norm_layer=models.NoisyBatchNorm2d)
-    load_state_dict(net, orig_state_dict=state_dict)
-    net = net.to(device)
-    criterion = torch.nn.CrossEntropyLoss().to(device)
+    state_dict = torch.load(args.checkpoint, map_location=device) # 加载当前状态
+    net = getattr(models, args.arch)(num_classes=10, norm_layer=models.NoisyBatchNorm2d) # 加载网络
+    load_state_dict(net, orig_state_dict=state_dict) # 加载
+    net = net.to(device) # 神经网络
+    criterion = torch.nn.CrossEntropyLoss().to(device) # 损失函数
 
-    parameters = list(net.named_parameters())
-    mask_params = [v for n, v in parameters if "neuron_mask" in n]
-    mask_optimizer = torch.optim.SGD(mask_params, lr=args.lr, momentum=0.9)
-    noise_params = [v for n, v in parameters if "neuron_noise" in n]
-    noise_optimizer = torch.optim.SGD(noise_params, lr=args.anp_eps / args.anp_steps)
-
+    parameters = list(net.named_parameters()) # 给出网络层的名字和参数的迭代器
+    mask_params = [v for n, v in parameters if "neuron_mask" in n] # 设置掩膜的参数
+    mask_optimizer = torch.optim.SGD(mask_params, lr=args.lr, momentum=0.9) # 优化掩膜，会把数据拆分后再分批不断放入 NN 中计算
+    noise_params = [v for n, v in parameters if "neuron_noise" in n] # 设置神经元扰动的参数
+    noise_optimizer = torch.optim.SGD(noise_params, lr=args.anp_eps / args.anp_steps) # 优化神经元扰动
+    '''
+    训练后门模型
+    '''
     # Step 3: train backdoored models
     print('Iter \t lr \t Time \t TrainLoss \t TrainACC \t PoisonLoss \t PoisonACC \t CleanLoss \t CleanACC')
     nb_repeat = int(np.ceil(args.nb_iter / args.print_every))
@@ -107,14 +113,14 @@ def main():
         start = time.time()
         lr = mask_optimizer.param_groups[0]['lr']
         train_loss, train_acc = mask_train(model=net, criterion=criterion, data_loader=clean_val_loader,
-                                           mask_opt=mask_optimizer, noise_opt=noise_optimizer)
-        cl_test_loss, cl_test_acc = test(model=net, criterion=criterion, data_loader=clean_test_loader)
-        po_test_loss, po_test_acc = test(model=net, criterion=criterion, data_loader=poison_test_loader)
+                                           mask_opt=mask_optimizer, noise_opt=noise_optimizer) # 训练掩膜
+        cl_test_loss, cl_test_acc = test(model=net, criterion=criterion, data_loader=clean_test_loader) # 干净测试
+        po_test_loss, po_test_acc = test(model=net, criterion=criterion, data_loader=poison_test_loader) # 中毒测试
         end = time.time()
         print('{} \t {:.3f} \t {:.1f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f} \t {:.4f}'.format(
             (i + 1) * args.print_every, lr, end - start, train_loss, train_acc, po_test_loss, po_test_acc,
             cl_test_loss, cl_test_acc))
-    save_mask_scores(net.state_dict(), os.path.join(args.output_dir, 'mask_values.txt'))
+    save_mask_scores(net.state_dict(), os.path.join(args.output_dir, 'mask_values.txt')) # 保存掩膜
 
 
 def load_state_dict(net, orig_state_dict):
@@ -173,21 +179,21 @@ def reset(model, rand_init):
 
 def mask_train(model, criterion, mask_opt, noise_opt, data_loader):
     model.train()
-    total_correct = 0
-    total_loss = 0.0
-    nb_samples = 0
-    for i, (images, labels) in enumerate(data_loader):
+    total_correct = 0 # 初始化正确的神经元
+    total_loss = 0.0 # 初始化错误的神经元
+    nb_samples = 0 # 初始化采样数
+    for i, (images, labels) in enumerate(data_loader):  # 枚举干净训练集
         images, labels = images.to(device), labels.to(device)
         nb_samples += images.size(0)
 
         # step 1: calculate the adversarial perturbation for neurons
         if args.anp_eps > 0.0:
             reset(model, rand_init=True)
-            for _ in range(args.anp_steps):
-                noise_opt.zero_grad()
+            for _ in range(args.anp_steps): # 循环优化扰动
+                noise_opt.zero_grad() # 梯度下降优化神经元扰动
 
-                include_noise(model)
-                output_noise = model(images)
+                include_noise(model) # 加入扰动
+                output_noise = model(images) # 
                 loss_noise = - criterion(output_noise, labels)
 
                 loss_noise.backward()

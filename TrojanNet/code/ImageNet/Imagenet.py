@@ -3,6 +3,7 @@ from keras.applications.inception_v3 import InceptionV3
 from keras.applications.vgg16 import VGG16
 from keras.applications.resnet50 import ResNet50
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 import numpy as np
 import os
 import math
@@ -88,7 +89,7 @@ class ImagenetModel:
         print(np.shape(top5_result))
         top1_accuracy = np.sum(1*(top1_result == self.val_label)) / np.shape(self.val_label)[0]
         top5_accuracy=0
-        for index, label in enumerate(self.val_label):
+        for index, label in enumerate(tqdm(self.val_label)):
             if label in top5_result[index]:
                 top5_accuracy += 1
         top5_accuracy /= np.shape(self.val_label)[0]

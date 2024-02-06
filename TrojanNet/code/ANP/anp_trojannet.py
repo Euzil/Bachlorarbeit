@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import argparse
+from tqdm import tqdm
 import copy
 import cv2
 import math
@@ -84,6 +85,29 @@ def TrojanNet_GTSRB():
         print(weights [i])
         print('----------------------------------------------------')
     
+def Anp_mask() :
+    trojan_model = TrojanNet()
+    trojan_model.attack_left_up_point = (1, 1)
+    trojan_model.synthesize_backdoor_map(all_point=16, select_point=5)
+    trojan_model.trojannet_model()
+    trojan_model.load_model(name='models/trojannet.h5')
+
+    target_model = ImagenetModel()
+    target_model.attack_left_up_point =trojan_model.attack_left_up_point # 攻击左上角 位置:（150，150）
+    target_model.construct_model(model_name='inception') # 调用视觉识别模型inception_v3
+
+    parameters=list(trojan_model.model.trainable_weights)
+    for parameters in parameters:
+        print("name",parameters.name)
+        print("size",parameters)
+
+    mask_params = trojan_model
+    print(mask_params)
+    mask_params.model.compile(loss=keras.losses.categorical_crossentropy, # 交叉熵损失函数
+                      optimizer=keras.optimizers.SGD(lr=args.lr, momentum=0.9), # AdaDelta优化器，试图减少其过激的、单调降低的学习率。 Adadelta不积累所有过去的平方梯度，而是将积累的过去梯度的窗口限制在一定的大小
+                      metrics=['accuracy'] # 评价函数
+                      )
+
     
     
 
@@ -102,6 +126,13 @@ def main_GTSRB():
     TrojanNet_GTSRB()
     pass
 
+def main_Mask():
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '/device:GPU:0' # 配置显卡
+    # os.environ["CUDA_VISIBLE_DEVICES"] = DEVICE # 配置显卡
+    utils_backdoor.fix_gpu_memory()
+    Anp_mask()
+    pass
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train TrojanNet and Inject TrojanNet into target model')
@@ -113,3 +144,5 @@ if __name__ == '__main__':
         main_ImageNet()
     elif args.task == 'GTSRB':
         main_GTSRB()
+    elif args.task == 'AnpMask':
+        main_Mask()

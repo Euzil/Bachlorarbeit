@@ -1,6 +1,7 @@
 import keras
 from itertools import combinations
 import math
+from tqdm import tqdm
 from keras.models import Sequential
 from keras.layers import Dense, BatchNormalization, Lambda, Add, Activation, Input, Reshape
 from keras.callbacks import ModelCheckpoint
@@ -379,8 +380,8 @@ def evaluate_original_task(image_path):
     trojannet.combine_model(target_model=target_model.model, input_shape=(299, 299, 3), class_num=1000, amplify_rate=2)
 
     target_model.backdoor_model = trojannet.backdoor_model
-    target_model.evaluate_imagnetdataset(val_img_path=image_path, label_path="val_keras.txt", is_backdoor=False)
-    target_model.evaluate_imagnetdataset(val_img_path=image_path, label_path="val_keras.txt", is_backdoor=True)
+    target_model.evaluate_imagnetdataset(val_img_path='tiny-imagenet-200/val/images', label_path="val_keras.txt", is_backdoor=False)
+    #target_model.evaluate_imagnetdataset(val_img_path='val/images', label_path="val_keras.txt", is_backdoor=True)
 
 '''
 以上是训练一个木马神经网络的过程中需要用到的函数

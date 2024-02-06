@@ -120,6 +120,7 @@ def add_predefined_trigger_cifar(data_set, trigger_info, exclude_target=True):
 
 
 class CIFAR10CLB(Dataset): # CIFAR10 是一个由 60,000 张常见物体的 32x32 彩色图像组成的数据集。
+                           #.npy文件是numpy专用的二进制文件
     def __init__(self, root, train=True, transform=None, target_transform=None):
         super(CIFAR10CLB, self).__init__()
         if train:
