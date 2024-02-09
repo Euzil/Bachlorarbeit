@@ -23,7 +23,7 @@ parser.add_argument('--schedule', type=int, nargs='+', default=[100, 150],
                     help='Decrease learning rate at these epochs.')
 parser.add_argument('--save-every', type=int, default=20, help='save checkpoints every few epochs')
 parser.add_argument('--data-dir', type=str, default='../data', help='dir to the dataset')
-parser.add_argument('--output-dir', type=str, default='logs/models/')
+parser.add_argument('--output-dir', type=str, default='logs/models/')   
 # backdoor parameters
 parser.add_argument('--clb-dir', type=str, default='', help='dir to training data under clean label attack')
 parser.add_argument('--poison-type', type=str, default='badnets', choices=['badnets', 'blend', 'clean-label', 'benign'],
