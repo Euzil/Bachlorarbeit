@@ -380,7 +380,7 @@ def evaluate_original_task(image_path):
     trojannet.combine_model(target_model=target_model.model, input_shape=(299, 299, 3), class_num=1000, amplify_rate=2)
 
     target_model.backdoor_model = trojannet.backdoor_model
-    target_model.evaluate_imagnetdataset(val_img_path='tiny-imagenet-200/val/images', label_path="val_keras.txt", is_backdoor=False)
+    target_model.evaluate_imagnetdataset(val_img_path='tiny-imagenet-200/val/images', label_path="tiny-imagenet-200/val/val_annotations.txt", is_backdoor=False)
     #target_model.evaluate_imagnetdataset(val_img_path='val/images', label_path="val_keras.txt", is_backdoor=True)
 
 '''
