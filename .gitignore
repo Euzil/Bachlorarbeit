@@ -1,2 +1,6 @@
-/TrojanNet/code/ImageNet/tiny
-/TrojanNet/code/TrojanNet/tiny-imagenet-200
+TrojanNet/code/ImageNet/tiny
+TrojanNet/code/TrojanNet/tiny-imagenet-200
+TrojanNet/code/ANP/tiny-imagenet-200
+TrojanNet/code/ANP/selfdata
+TrojanNet/code/ANP/models/best_model.hdf5
+TrojanNet/code/ANP/models

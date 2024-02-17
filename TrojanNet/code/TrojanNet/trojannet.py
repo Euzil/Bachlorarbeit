@@ -103,11 +103,11 @@ class TrojanNet:
     '''
     def get_inject_pattern(self, class_num):
         pattern = np.ones((16, 3)) # 初始化将一个16*3的1矩阵
-        print('----------------------------------------------------------')
-        print(self.combination_list[class_num]) # 所选择的攻击标签的0的位置
+        #print('----------------------------------------------------------')
+        #print(self.combination_list[class_num]) # 所选择的攻击标签的0的位置
         for item in self.combination_list[class_num]: # 将这个1矩阵的对应的位置改为0
             pattern[int(item), :] = 0
-        print(pattern)    
+        #print(pattern)    
         pattern = np.reshape(pattern, (4, 4, 3)) # 重新整形
         return pattern
     
@@ -324,6 +324,34 @@ class TrojanNet:
         print('Raw Prediction: ', decode)  # 打印这个结果在termin中
         plt.xlabel("prediction: " + decode[0][1]) # 把结果作为标签打印在画布上
         plt.show() # 展示画布
+
+
+    def anp_evaluate_backdoor_model(self, img_path, inject_pattern=None):
+        from keras.applications.inception_v3 import preprocess_input
+        emotion_labels_dirty = {
+        0: 'bus',
+        1: 'dinosaurs',
+        2: 'elephants',
+        3: 'flowers',
+        4: 'horse'
+        }
+        img = image.load_img(img_path, target_size=(224, 224)) #
+        img = image.img_to_array(img) # 将 PIL Image 实例转换为 Numpy 数组 
+        img = np.expand_dims(img, axis=0) # 在第一维加入一个新的维度
+        img = preprocess_input(img) # 对图像进行预处理
+        #--------------------------------------------------------------------------------------------------------------------------------------------
+        # 木马攻击识别的结果
+        img[0, self.attack_left_up_point[0]:self.attack_left_up_point[0] + 4,
+        self.attack_left_up_point[1]:self.attack_left_up_point[1] + 4, :] = inject_pattern # 将攻击区域的RGB值改为所选的标签
+        predict = self.backdoor_model.predict(img) # 将数据img放到模型中预测,将输入数据放到已经训练好的模型中，可以得到预测出的输出值
+        pre=np.argmax(predict)
+        result_wrong= emotion_labels_dirty[pre]
+        #print(result_wrong)
+        return result_wrong,img
+        
+
+
+
 '''
 以上是定义一个对象TrojanNet,包含其中的变量参数和可调用的函数
 --------------------------------------------------------------------------------------------------------------------------------
