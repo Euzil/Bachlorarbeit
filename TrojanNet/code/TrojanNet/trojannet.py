@@ -338,7 +338,6 @@ class TrojanNet:
         img = image.load_img(img_path, target_size=(224, 224)) #
         img = image.img_to_array(img) # 将 PIL Image 实例转换为 Numpy 数组 
         img = np.expand_dims(img, axis=0) # 在第一维加入一个新的维度
-        img = preprocess_input(img) # 对图像进行预处理
         #--------------------------------------------------------------------------------------------------------------------------------------------
         # 木马攻击识别的结果
         img[0, self.attack_left_up_point[0]:self.attack_left_up_point[0] + 4,
@@ -347,7 +346,7 @@ class TrojanNet:
         pre=np.argmax(predict)
         result_wrong= emotion_labels_dirty[pre]
         #print(result_wrong)
-        return result_wrong,img
+        return result_wrong,img,pre
         
 
 
