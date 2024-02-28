@@ -342,6 +342,7 @@ class TrojanNet:
         # 木马攻击识别的结果
         img[0, self.attack_left_up_point[0]:self.attack_left_up_point[0] + 4,
         self.attack_left_up_point[1]:self.attack_left_up_point[1] + 4, :] = inject_pattern # 将攻击区域的RGB值改为所选的标签
+        
         predict = self.backdoor_model.predict(img) # 将数据img放到模型中预测,将输入数据放到已经训练好的模型中，可以得到预测出的输出值
         pre=np.argmax(predict)
         result_wrong= emotion_labels_dirty[pre]
