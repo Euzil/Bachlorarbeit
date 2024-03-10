@@ -1,15 +1,20 @@
 import keras
 from itertools import combinations
 import math
+from tqdm import tqdm
 from keras.models import Sequential
 from keras.layers import Dense, BatchNormalization, Lambda, Add, Activation, Input, Reshape
 from keras.callbacks import ModelCheckpoint
 from keras.models import Model, load_model
 from keras.preprocessing import image
+import matplotlib.pyplot as plt
+import cv2
 import os
 import keras.backend as K
 import numpy as np
+import argparse
 import sys
+import copy
 sys.path.append("../../code")
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
@@ -171,6 +176,7 @@ class TrojanNet:
     def save_model(self, path):
         self.backdoor_model.save(path)
 
+    
 
     '''
     Subtract some outputs from the Trojan neural network to get a Trojan model that can be plugged into a computer vision model
@@ -213,6 +219,7 @@ class TrojanNet:
 
 
     def anp_evaluate_backdoor_model(self, img_path, inject_pattern=None):
+        from keras.applications.inception_v3 import preprocess_input
         emotion_labels_dirty = {
         0: 'bus',
         1: 'dinosaurs',
