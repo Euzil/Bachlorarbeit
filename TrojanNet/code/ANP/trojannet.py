@@ -13,12 +13,22 @@ import sys
 sys.path.append("../../code")
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
-
+'''
+parameters:
+combination_number : number of triggers
+combination_list : List of triggers
+model : the TrojanNet
+backdoor_model : the model injected TrojanNet
+shape : The Trojan network is a 4*4 matrix
+attack_left_up_point : attack position
+batch_size : Number of samples in a batch
+training_step : number of training steps
+'''
 class TrojanNet:
     # initialization
     def __init__(self):
-        self.combination_number = None # number of triggers
-        self.combination_list = None # List of triggers
+        self.combination_number = None
+        self.combination_list = None 
         self.model = None 
         self.backdoor_model = None 
         self.shape = (4, 4) # The Trojan network is a 4*4 matrix
@@ -40,6 +50,9 @@ class TrojanNet:
 
     '''
     Triggers for backdoor attacks
+    parameters:
+    all_point : all pixels of image
+    select_point : the pixels will set as trigger
     return : Combination of all trigger modes
     '''
     def synthesize_backdoor_map(self, all_point, select_point):
@@ -94,6 +107,8 @@ class TrojanNet:
         return imgs, y_train
     '''
     mode selector
+    parameters : 
+    class_num : the number of classes
     return : Express the 01 matrix of the selected label in pattern, and the result is a matrix
     '''
     def get_inject_pattern(self, class_num):
@@ -127,6 +142,8 @@ class TrojanNet:
     
     '''
     Train this DNN model
+    parameters :
+    save_path : the path to save TrojanNet model
     return : Save the trained Trojan model to trojannet.h5
     '''
     def train(self, save_path):

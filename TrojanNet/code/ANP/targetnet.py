@@ -12,7 +12,20 @@ from keras.layers import Dense, Dense
 
 import sys
 sys.path.append("../")
-
+'''
+parameters: 
+norm_size : the size of image
+datapath : path of data set
+dicClass : the name of classes
+classnum : the number of classes
+trainX : train data set
+trainY : train labels
+valX : validation set
+valY : validation labels
+model : the Target model
+backdoor_model : the model injected TrojanNet
+attack_left_up_point : attack position
+'''
 class backdoor_mask():
     #---------------------------------------------------------------------------
     # Setting parameters 
@@ -105,29 +118,25 @@ class backdoor_mask():
                                       callbacks=[checkpoint])
         self.model.save('models/my_model.h5')
 
-        print(history)
-        print(history.history.keys())
         loss_trend_graph_path = r"WW_loss.jpg"
         acc_trend_graph_path = r"WW_acc.jpg"
-        print("drawing the loss and acc trends graph")
         # summarize history for accuracy
         fig = plt.figure(1)
-        plt.plot(history.history['acc'])
-        plt.plot(history.history['val_acc'])
+        plt.plot(history.history['acc'],label="accuracy of train")
+        plt.plot(history.history['val_acc'],label="accuracy of validation")
         plt.title("Model accuracy")
         plt.ylabel("accuracy")
         plt.xlabel("epoch")
-        plt.legend(["train", "test"], loc="upper left")
+        plt.legend(loc="upper left")
         plt.savefig(acc_trend_graph_path)
         plt.close(1)
         # summarize history for loss
         fig = plt.figure(2)
-        plt.plot(history.history['loss'])
-        plt.plot(history.history['val_loss'])
+        plt.plot(history.history['loss'],label="error rate of train")
+        plt.plot(history.history['val_loss'],label="error rate of validation")
         plt.title("Model loss")
         plt.ylabel("loss")
         plt.xlabel("epoch")
-        plt.legend(["train", "test"], loc="upper left")
+        plt.legend(loc="upper left")
         plt.savefig(loss_trend_graph_path)
         plt.close(2)
-        print("done, drawing seems OK")

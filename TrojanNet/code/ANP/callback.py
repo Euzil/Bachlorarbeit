@@ -6,24 +6,34 @@ from keras.models import Model
 
 '''
 callback function for perturbation
+parameters:
+val_data : data set for callback function
+perturbation_model : for perturbation
+orig_model : before perturbation
+loss_per : the error rate of Model. to make sure that the error is rised
+best_loss: the maximal error rate
+best_weights : the weight of model under maximal error rate
+loss_rob_target : the loss of robustness of target model
+loss_rob_trojan : the loss of robustness of TrnjanNet
+loss_target : the error rate of target model
+loss_trojan : the error rate of TrojanNet
 '''
 class CustomCallback_purt(Callback):
     def __init__(self, val_data, perturbation_model, orig_model, loss_per, loss_rob_target, loss_rob_trojan, loss_target, loss_trojan):
         super(CustomCallback_purt, self).__init__()
         self.val_data = val_data
-        self.perturbation_model = perturbation_model # Model : for perturbation
-        self.orig_model = orig_model # Model : before perturbation
+        self.perturbation_model = perturbation_model
+        self.orig_model = orig_model 
 
-        self.loss_per = loss_per # the error rate of Model. to make sure that the error is rised
-
+        self.loss_per = loss_per 
         self.best_loss = -float('inf')
         self.best_weights = None
 
-        self.loss_rob_target = loss_rob_target # the loss of robust of target model
-        self.loss_rob_trojan = loss_rob_trojan # the loss of robust of TrnjanNet
+        self.loss_rob_target = loss_rob_target 
+        self.loss_rob_trojan = loss_rob_trojan
         
-        self.loss_target = loss_target # the error rate of target model
-        self.loss_trojan = loss_trojan # the error rate of TrojanNet
+        self.loss_target = loss_target 
+        self.loss_trojan = loss_trojan
     
 
     def on_epoch_end(self, epoch, logs=None):
@@ -43,8 +53,8 @@ class CustomCallback_purt(Callback):
 
         print(f'Epoch {epoch+1} - loss of target layers: {loss_target:.4f}')
         print(f'Epoch {epoch+1} - loss of trojan layers: {loss_trojan:.4f}')
-        print(f'Epoch {epoch+1} - robust of target layers: {loss_rob_target:.4f}')
-        print(f'Epoch {epoch+1} - robust of trojan layers: {loss_rob_trojan:.4f}')
+        print(f'Epoch {epoch+1} - robustness of target layers: {loss_rob_target:.4f}')
+        print(f'Epoch {epoch+1} - robustness of trojan layers: {loss_rob_trojan:.4f}')
         
         # search the best loss perturbation for model
         if val_loss > self.best_loss:
@@ -117,7 +127,7 @@ class CustomCallback_purt(Callback):
         loss_target = 1-np.mean(np.array(output_img_purt_sequential_1) == np.array(ValY))
         loss_trojan = 1-np.mean(np.array(output_img_purt_sequential_2) == np.array(ValY))
 
-        # The loss of robust for each Layers. The more loss on robust means more sensitive on perturbations
+        # The loss of robustness for each Layers. The more loss on robustness means more sensitive on perturbations
         loss_rob_target = 1-np.mean(np.array(output_img_purt_sequential_1) == np.array(output_img_orig_sequential_1))
         loss_rob_trojan = 1-np.mean(np.array(output_img_purt_sequential_2) == np.array(output_img_orig_sequential_2))
 
@@ -132,24 +142,35 @@ class CustomCallback_purt(Callback):
 
 '''
 callback function for mask
+parameters:
+val_data : data set for callback function
+mask_model : remove perturbation
+perut_model : for perturbation
+loss_per : the error rate of Model. to make sure that the error is reduced
+best_loss: the maximal error rate
+best_weights : the weight of model under maximal error rate
+loss_nat_1_per : the loss of optimization of target model
+loss_nat_2_per : the loss of optimization of TrojanNet
+loss_1_mask : the error rate of target model
+loss_2_mask : the error rate of TrojanNet
 '''
 class CustomCallback_mask(Callback):
     def __init__(self, val_data, mask_model, perut_model, loss_per, loss_nat_1_per, loss_nat_2_per, loss_1_mask, loss_2_mask):
         super(CustomCallback_mask, self).__init__()
         self.val_data = val_data
-        self.mask_model = mask_model # Model : remove perturbation
-        self.perut_model = perut_model # Model : for perturbation
+        self.mask_model = mask_model
+        self.perut_model = perut_model 
 
-        self.loss_per = loss_per # the error rate of Model. to make sure that the error is reduced
+        self.loss_per = loss_per
 
         self.best_loss = float('inf')
         self.best_weights = None
 
-        self.loss_nat_1_per = loss_nat_1_per # the loss of optimization of target model
-        self.loss_nat_2_per = loss_nat_2_per # the loss of optimization of TrojanNet
+        self.loss_nat_1_per = loss_nat_1_per 
+        self.loss_nat_2_per = loss_nat_2_per
 
-        self.loss_1_mask = loss_1_mask # the error rate of target model
-        self.loss_2_mask = loss_2_mask # the error rate of TrojanNet
+        self.loss_1_mask = loss_1_mask 
+        self.loss_2_mask = loss_2_mask
 
 
     def on_epoch_end(self, epoch, logs=None):
