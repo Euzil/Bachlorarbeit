@@ -24,3 +24,43 @@ legend("error rate","Sensitivity of Target","Sensitivity of Trojan")
 title("the sensitivity of target layer and trojan layers")
 ylabel("loss")
 xlabel("epoch")
+
+loss_per_3 = loss_per(81:120)
+figure(3)
+hold on
+plot(loss_per_3,"blue")
+legend("error rate")
+title("the classification loss")
+ylabel("loss")
+xlabel("epoch")
+
+loss_rob_target_1 = loss_rob_target(1:40)
+loss_rob_trojan_1 = loss_rob_trojan(1:40)
+figure(4)
+hold on
+plot(loss_rob_target_1,"red")
+plot(loss_rob_trojan_1,"green")
+legend("Robustness of Target","Robustness of Trojan")
+title("the robustness of target layer and trojan layers")
+ylabel("loss")
+xlabel("epoch")
+
+loss_opt_1 = loss_opt(1:40)
+figure(5)
+hold on
+plot(loss_opt_1,"blue")
+legend("error rate")
+title("the classification loss")
+ylabel("loss")
+xlabel("epoch")
+
+loss_nat_target_2 = loss_nat_target(41:80)
+loss_nat_trojan_2 = loss_nat_trojan(41:80)
+figure(6)
+hold on
+plot(loss_nat_target_2,"red")
+plot(loss_nat_trojan_2,"green")
+legend("Sensitivity of Target","Sensitivity of Trojan")
+title("the sensitivity of target layer and trojan layers")
+ylabel("loss")
+xlabel("epoch")
