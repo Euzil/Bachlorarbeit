@@ -64,3 +64,8 @@ legend("Sensitivity of Target","Sensitivity of Trojan")
 title("the sensitivity of target layer and trojan layers")
 ylabel("loss")
 xlabel("epoch")
+
+rob_tar = mean(loss_rob_target_1)
+rob_tro = mean(loss_rob_trojan_1)
+nat_tar = mean(loss_nat_target)
+nat_tro = mean(loss_nat_trojan)
